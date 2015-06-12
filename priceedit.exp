@@ -65,7 +65,7 @@ $handler->display->display_options['style_options']['info'] = array(
 $handler->display->display_options['footer']['area_text_custom']['id'] = 'area_text_custom';
 $handler->display->display_options['footer']['area_text_custom']['table'] = 'views';
 $handler->display->display_options['footer']['area_text_custom']['field'] = 'area_text_custom';
-$handler->display->display_options['footer']['area_text_custom']['content'] = '<a href="/pricelist/edit/insert">Add</a>';
+$handler->display->display_options['footer']['area_text_custom']['content'] = '<a href="/priceedit/insert">Add</a>';
 /* Field: Price: Id */
 $handler->display->display_options['fields']['id']['id'] = 'id';
 $handler->display->display_options['fields']['id']['table'] = 'pricelist_price';
