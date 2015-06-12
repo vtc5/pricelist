@@ -1,0 +1,336 @@
+<?php
+function pricelist_menu() {
+  $items['pricelist'] = array(
+         'title' => 'Pricelist',
+         'description' => 'Pricelist.',
+         'page callback' => 'pricelist_view_page',
+		 'access arguments' => array('view pricelist'),
+      );
+  $items['pricelist/edit'] = array(
+         'title' => 'Edit Pricelist',
+         'description' => 'Edit pricelist.',
+         'page callback' => 'pricelist_edit_page',
+		 'access arguments' => array('edit pricelist'),
+      );
+  $items['pricelist/edit/%/delete'] = array(
+         'title callback' => 'pricelist_delete_page_title',
+         'title arguments' => array(2),
+         'page callback' => 'drupal_get_form',
+         'page arguments' => array('pricelist_delete_form', 2),
+		 'access arguments' => array('edit pricelist'),
+      );
+  $items['pricelist/edit/%/edit'] = array(
+         'title callback' => 'pricelist_update_page_title',
+         'title arguments' => array(2),
+         'page callback' => 'drupal_get_form',
+         'page arguments' => array('pricelist_update_form', 2),
+		 'access arguments' => array('edit pricelist'),
+      );
+  $items['pricelist/edit/insert'] = array(
+         'title' => 'Append record.',
+         'page callback' => 'drupal_get_form',
+         'page arguments' => array('pricelist_insert_form', 2),
+		 'access arguments' => array('edit pricelist'),
+      );
+  $items['admin/config/user-interface/xray'] = array(
+         'title' => 'Pricelist',
+         'description' => 'Configure pricelist.',
+         'page callback' => 'drupal_get_form',
+         'page arguments' => array('pricelist_admin_settings'),
+         'file' => 'pricelist.admin.inc',
+         'access arguments' => array('administer xray'),
+         'weight' => 0,
+      );
+  return $items;
+	
+}
+
+function pricelist_permission() {
+return array(
+  'view pricelist' => array(
+    'title' => t('View pricelist'),
+    'description' => t('Allows users to see pricelist.'),
+    ),
+  'edit pricelist' => array(
+    'title' => t('Edit pricelist'),
+    'description' => t('Allows users edit pricelist.'),
+     ),
+  'administer pricelist' => array(
+    'title' => t('Configure pricelist'),
+    'description' => t('Allows administrators to configure pricelist.'),
+     ),
+  );
+}
+
+function pricelist_view_page() {
+  $build = array();
+  $header = array(
+    array('data' =>t('ID'), 'field' => 'p.id'),
+    array('data' =>t('Cod'), 'field' => 'p.cod'),
+    array('data' => t('Category'),'field' => 'p.category'),
+    array('data' => t('Good'), 'field' => 'p.goods'),
+    array('data' => t('Price'), 'field' => 'p.price'),
+  );
+  $rows = array();
+  $query = db_select('pricelist_price','p')->extend('TableSort');
+  $query->fields('p', array('id','cod', 'category','goods', 'price'));
+  $result = $query->extend('PagerDefault')->limit(variable_get('pricelist_row_on_page_view', 50))->orderByHeader($header)->execute();
+  foreach ($result as $good) {
+    $rows[] = array(
+	  array('data'=>$good->id,'id'=>'id'),
+	  array('data'=>$good->cod,'id'=>'cod'),
+	  array('data'=>$good->category,'id'=>'category'),
+	  array('data'=>$good->goods,'id'=>'goods'),
+	  array('data'=>str_replace(' ', '&nbsp;',number_format($good->price, 2, ',', ' ')),'id'=>'price'),
+      );
+  }
+  $output = theme('table', array('header' => $header, 'rows' => $rows));
+  $output .= theme('pager');
+  return $output;
+}  
+
+
+function pricelist_edit_page() {
+  $build = array();
+  $header = array(
+    array('data' =>t('ID'), 'field' => 'p.id'),
+    array('data' =>t('Cod'), 'field' => 'p.cod'),
+    array('data' => t('Category'),'field' => 'p.category'),
+    array('data' => t('Good'), 'field' => 'p.goods'),
+    array('data' => t('Price'), 'field' => 'p.price'),
+    array('data' => t('Action'), ),
+  );
+  $rows = array();
+  $query = db_select('pricelist_price','p')->extend('TableSort');
+  $query->fields('p', array('id','cod', 'category','goods', 'price'));
+  $result = $query->extend('PagerDefault')->limit(variable_get('pricelist_row_on_page_edit', 100))->orderByHeader($header)->execute();
+  foreach ($result as $good) {
+    $rows[] = array(
+	  array('data'=>$good->id,'id'=>'id'),
+	  array('data'=>$good->cod,'id'=>'cod'),
+	  array('data'=>$good->category,'id'=>'category'),
+	  array('data'=>$good->goods,'id'=>'goods'),
+	  array('data'=>str_replace(' ', '&nbsp;',number_format($good->price, 2, ',', ' ')),'id'=>'price'),
+	  array('data'=>l(t('Edit'), "pricelist/edit/{$good->id}/edit").'  '.l(t('Delete'), "pricelist/edit/{$good->id}/delete"),'id'=>'actions'),
+      );
+  }
+  $output = theme('table', array('header' => $header, 'rows' => $rows));
+  $output .= theme('pager');
+  return $output;
+}  
+
+
+function pricelist_delete_page_title($id) {
+  $placeholders = array(':id' => $id);
+  $goods = db_query("SELECT `Goods` FROM {pricelist_price} WHERE `id` = :id", $placeholders)->fetchField();
+  if ($goods) {
+    return t('Are you sure you want to delete item "@goods"?', array('@goods' => $goods));
+  } else {
+	return t('Id not found.');
+  }
+}
+
+function pricelist_update_page_title($id) {
+  $placeholders = array(':id' => $id);
+  $goods = db_query("SELECT `Goods` FROM {pricelist_price} WHERE `id` = :id", $placeholders)->fetchField();
+  if ($goods) {
+	return t('Edit Good "@goods"?', array('@goods' => $goods));
+  } else {
+	return t('Cod not found.');
+  }
+}
+
+function pricelist_delete_form($form, $form_state) {
+  $form = array();
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+  $form['cancel'] = array(
+    '#markup' => l(t('Cancel'), 'pricelist/edit'),
+  );
+  return $form;
+}
+
+
+function pricelist_delete_form_submit($form, &$form_state) {
+  $id = $form_state['build_info']['args'][0];
+  $result = db_delete('pricelist_price')
+    ->condition('id', $id)
+    ->execute();
+  $placeholders = array('@id' => $id);
+  if ($result) {
+    drupal_set_message(t('Record @id successfully removed.', $placeholders));
+  }
+  else {
+    drupal_set_message(t('Record @id is undefined.', $placeholders), 'warning');
+  }
+  $form_state['redirect'] = 'pricelist/edit';
+}
+
+function pricelist_insert_form($form, $form_state) {
+  $form = array();
+  $form['cod'] = array(
+    '#title' => t('Cod'),
+    '#type' => 'textfield',
+    '#maxlength' => 15,
+    '#description' => t('Only numbers'),
+    '#element_validate' => array('element_validate_number'),
+    '#required' => TRUE,
+  );
+  $form['category'] = array(
+    '#title' => t('Category'),
+    '#type' => 'textfield',
+    '#maxlength' => 250,
+    '#required' => TRUE,
+  );
+  $form['goods'] = array(
+    '#title' => t('Good'),
+    '#type' => 'textfield',
+    '#maxlength' => 250,
+    '#required' => TRUE,
+  );
+  $form['price'] = array(
+    '#title' => t('Price'),
+    '#type' => 'textfield',
+    '#maxlength' => 15,
+    '#element_validate' => array('element_validate_number'),
+    '#required' => TRUE,
+  );
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+  $form['actions']['cancel'] = array(
+    '#markup' => l(t('Cancel'), 'pricelist/edit')
+  );
+  $form['#validate'][] = 'pricelist_insert_form_validate';
+  return $form;
+}
+
+
+function pricelist_update_form($form, $form_state) {
+  $id = $form_state['build_info']['args'][0];
+  $data = db_select('pricelist_price', 'p')
+    ->condition('p.id', $id)
+    ->fields('p')
+    ->execute()
+    ->fetchAssoc();
+  $form = array();
+  if (empty($data) || empty($data['id'])) {
+    $placeholders = array(
+      '@id' => $id,
+      '!back' => l(t('Go back'), 'pricelist/edit'),
+    );
+    $form['text'] = array(
+      '#markup' => t('Undefined id "@id". !back.', $placeholders),
+    );
+    return $form;
+  }
+  $form['cod'] = array(
+    '#title' => t('Cod'),
+    '#type' => 'textfield',
+    '#maxlength' => 15,
+    '#description' => t('Only numbers'),
+    '#element_validate' => array('element_validate_number'),
+    '#required' => TRUE,
+    '#default_value' => $data['cod'],
+  );
+  $form['category'] = array(
+    '#title' => t('Category'),
+    '#type' => 'textfield',
+    '#maxlength' => 250,
+    '#required' => TRUE,
+    '#default_value' => $data['category'],
+  );
+  $form['goods'] = array(
+    '#title' => t('Good'),
+    '#type' => 'textfield',
+    '#maxlength' => 250,
+    '#required' => TRUE,
+    '#default_value' => $data['goods'],
+  );
+  $form['price'] = array(
+    '#title' => t('Price'),
+    '#type' => 'textfield',
+    '#maxlength' => 15,
+    '#element_validate' => array('element_validate_number'),
+    '#required' => TRUE,
+    '#default_value' => $data['price'],
+  );
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+  $form['actions']['cancel'] = array(
+    '#markup' => l(t('Cancel'), 'pricelist/edit')
+  );
+  $form['#validate'][] = 'pricelist_insert_form_validate';
+  return $form;
+}
+
+function pricelist_insert_form_validate($form, &$form_state) {
+  if (drupal_strlen($form_state['values']['cod']) > 15) {
+    form_set_error('cod', t('Field "@fieldname" must be less than @c chars.',
+      array('@fieldname' => t('Number'), '@c' => 15)));
+  }
+  elseif (!ctype_digit($form_state['values']['cod'])) {
+    form_set_error('cod', t('Field "cod" must contains an integer.'));
+  }
+  if (drupal_strlen($form_state['values']['category']) > 250) {
+    form_set_error('categroy', t('Field "@fieldname" must be less than @c chars.',
+      array('@fieldname' => t('Category'), '@c' => 250)));
+  }
+  if (drupal_strlen($form_state['values']['goods']) > 250) {
+    form_set_error('goods', t('Field "@fieldname" must be less than @c chars.',
+      array('@fieldname' => t('Goods'), '@c' => 250)));
+  }
+  if (drupal_strlen($form_state['values']['price']) > 15) {
+    form_set_error('price', t('Field "@fieldname" must be less than @c chars.',
+      array('@fieldname' => t('Price'), '@c' => 15)));
+  }
+  elseif (!is_numeric($form_state['values']['price'])) {
+    form_set_error('price', t('Field "price" must contains an decimal.'));
+  }
+}
+
+function pricelist_insert_form_submit($form, &$form_state) {
+  $values = $form_state['values'];
+  $query = db_insert('pricelist_price')
+    ->fields(array(
+     'cod' => $values['cod'],
+     'category' => $values['category'],
+     'goods' => $values['goods'],
+      'price' => $values['price'],
+    ))
+    ->execute();
+  if ($query > 0) {
+    drupal_set_message(t('Data has been successfully sent.'));
+  }
+  else {
+    drupal_set_message(t("Data hasn't been sent."), 'error');
+  }
+}
+
+function pricelist_update_form_submit($form, &$form_state) {
+  $id = $form_state['build_info']['args'][0];
+  $values = $form_state['values'];
+  $query = db_update('pricelist_price')
+    ->fields(array(
+     'cod' => $values['cod'],
+     'category' => $values['category'],
+     'goods' => $values['goods'],
+      'price' => $values['price'],
+    ))
+    ->condition('id', $id)
+    ->execute();
+  if ($query) {
+    drupal_set_message(t('Data updated successfully'));
+  }
+  else {
+    drupal_set_message(t('Data is not updated'), 'warning');
+  }
+  $form_state['redirect'] = 'pricelist/edit';
+}

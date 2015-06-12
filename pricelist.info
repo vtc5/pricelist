@@ -1,0 +1,6 @@
+name = Price List
+description = Show and edit pricelist
+core = 7.x
+package = Development
+stylesheets[all][] = pricelist.css
+

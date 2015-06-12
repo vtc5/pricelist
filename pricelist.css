@@ -1,0 +1,13 @@
+#price {
+  text-align: right;
+}
+#cid {
+  text-align: right;
+}
+#category {
+  min-width: 70px;
+}
+#price {
+  min-width: 50px;
+}
+

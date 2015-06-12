@@ -1,0 +1,60 @@
+<?php
+/**
+* @file
+* Установка, обновление и удаление функций модуля Х-гау.
+*/
+/**
+* Реализуем hook_schema().
+*/
+function pricelist_schema() {
+  $schema['pricelist_price'] = array(
+    'description' => 'Price list',
+	'fields' => array(
+		'id' => array(
+		  'description' => 'The primary identifier for a record.',
+		  'type' => 'serial',
+		  'unsigned' => TRUE,
+		  'not null' => TRUE,
+		 ),
+       'cod' => array(
+         'description' => 'Cod',
+         'type' => 'int',
+		 'size' => 'big',
+     	 'precision' => 15,
+  		 'unsigned' => TRUE,
+		 'not null' => TRUE,
+		 'default' => 0,
+        ),
+	   'category' => array(
+			'description' => 'Category',
+            'type' => 'varchar',
+            'length' => 255,
+            'not null' => TRUE,
+            'default' => '',
+			),
+		'goods' => array(
+			'description' => 'Goods',
+            'type' => 'varchar',
+            'length' => 255,
+            'not null' => TRUE,
+            'default' => '',
+			),
+		'price' => array(
+			'description' => 'Price',
+			'type' => 'numeric',
+			'unsigned' => TRUE,
+			'not null' => TRUE,
+			'precision' => 15,
+			'scale' => 2,
+			'default' => 0,
+		   ),
+		),
+    'indexes' => array(
+       'pricelist_price_category' => array('category'),
+       'pricelist_price_goods' => array('goods'),
+      ),
+    'primary key' => array('id'),
+    );
+  //debug($schema, TRUE);
+  return $schema;
+}
