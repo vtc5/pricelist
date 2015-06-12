@@ -1,0 +1,177 @@
+$view = new view();
+$view->name = 'PriceEdit';
+$view->description = '';
+$view->tag = 'default';
+$view->base_table = 'pricelist_price';
+$view->human_name = 'Price Edit';
+$view->core = 7;
+$view->api_version = '3.0';
+$view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+/* Display: Master */
+$handler = $view->new_display('default', 'Master', 'default');
+$handler->display->display_options['title'] = 'Price';
+$handler->display->display_options['use_ajax'] = TRUE;
+$handler->display->display_options['use_more'] = TRUE;
+$handler->display->display_options['use_more_always'] = FALSE;
+$handler->display->display_options['access']['type'] = 'perm';
+$handler->display->display_options['access']['perm'] = 'edit pricelist';
+$handler->display->display_options['cache']['type'] = 'none';
+$handler->display->display_options['query']['type'] = 'views_query';
+$handler->display->display_options['exposed_form']['type'] = 'basic';
+$handler->display->display_options['pager']['type'] = 'mini';
+$handler->display->display_options['pager']['options']['items_per_page'] = '50';
+$handler->display->display_options['pager']['options']['offset'] = '0';
+$handler->display->display_options['pager']['options']['id'] = '0';
+$handler->display->display_options['style_plugin'] = 'table';
+$handler->display->display_options['style_options']['columns'] = array(
+  'id' => 'id',
+  'cod' => 'cod',
+  'goods' => 'goods',
+  'price' => 'price',
+);
+$handler->display->display_options['style_options']['default'] = 'id';
+$handler->display->display_options['style_options']['info'] = array(
+  'id' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'cod' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'goods' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+  'price' => array(
+    'sortable' => 1,
+    'default_sort_order' => 'asc',
+    'align' => '',
+    'separator' => '',
+    'empty_column' => 0,
+  ),
+);
+/* Footer: Global: Unfiltered text */
+$handler->display->display_options['footer']['area_text_custom']['id'] = 'area_text_custom';
+$handler->display->display_options['footer']['area_text_custom']['table'] = 'views';
+$handler->display->display_options['footer']['area_text_custom']['field'] = 'area_text_custom';
+$handler->display->display_options['footer']['area_text_custom']['content'] = '<a href="/pricelist/edit/insert">Add</a>';
+/* Field: Price: Id */
+$handler->display->display_options['fields']['id']['id'] = 'id';
+$handler->display->display_options['fields']['id']['table'] = 'pricelist_price';
+$handler->display->display_options['fields']['id']['field'] = 'id';
+/* Field: Price: Cod */
+$handler->display->display_options['fields']['cod']['id'] = 'cod';
+$handler->display->display_options['fields']['cod']['table'] = 'pricelist_price';
+$handler->display->display_options['fields']['cod']['field'] = 'cod';
+/* Field: Price: Category */
+$handler->display->display_options['fields']['category']['id'] = 'category';
+$handler->display->display_options['fields']['category']['table'] = 'pricelist_price';
+$handler->display->display_options['fields']['category']['field'] = 'category';
+/* Field: Price: Good */
+$handler->display->display_options['fields']['goods']['id'] = 'goods';
+$handler->display->display_options['fields']['goods']['table'] = 'pricelist_price';
+$handler->display->display_options['fields']['goods']['field'] = 'goods';
+/* Field: Price: Price */
+$handler->display->display_options['fields']['price']['id'] = 'price';
+$handler->display->display_options['fields']['price']['table'] = 'pricelist_price';
+$handler->display->display_options['fields']['price']['field'] = 'price';
+/* Field: Global: Custom text */
+$handler->display->display_options['fields']['nothing']['id'] = 'nothing';
+$handler->display->display_options['fields']['nothing']['table'] = 'views';
+$handler->display->display_options['fields']['nothing']['field'] = 'nothing';
+$handler->display->display_options['fields']['nothing']['label'] = 'Edit';
+$handler->display->display_options['fields']['nothing']['alter']['text'] = '<a href="/priceedit/[id]/Edit">Edit</a>&nbsp;<a href="/priceedit/[id]/Delete">Delete</a>';
+/* Contextual filter: Price: Cod */
+$handler->display->display_options['arguments']['cod']['id'] = 'cod';
+$handler->display->display_options['arguments']['cod']['table'] = 'pricelist_price';
+$handler->display->display_options['arguments']['cod']['field'] = 'cod';
+$handler->display->display_options['arguments']['cod']['default_argument_type'] = 'fixed';
+$handler->display->display_options['arguments']['cod']['summary']['number_of_records'] = '0';
+$handler->display->display_options['arguments']['cod']['summary']['format'] = 'default_summary';
+$handler->display->display_options['arguments']['cod']['summary_options']['items_per_page'] = '25';
+$handler->display->display_options['arguments']['cod']['limit'] = '0';
+/* Contextual filter: Price: Good */
+$handler->display->display_options['arguments']['goods']['id'] = 'goods';
+$handler->display->display_options['arguments']['goods']['table'] = 'pricelist_price';
+$handler->display->display_options['arguments']['goods']['field'] = 'goods';
+$handler->display->display_options['arguments']['goods']['default_argument_type'] = 'fixed';
+$handler->display->display_options['arguments']['goods']['summary']['number_of_records'] = '0';
+$handler->display->display_options['arguments']['goods']['summary']['format'] = 'default_summary';
+$handler->display->display_options['arguments']['goods']['summary_options']['items_per_page'] = '25';
+$handler->display->display_options['arguments']['goods']['limit'] = '0';
+/* Filter criterion: Price: Cod */
+$handler->display->display_options['filters']['cod']['id'] = 'cod';
+$handler->display->display_options['filters']['cod']['table'] = 'pricelist_price';
+$handler->display->display_options['filters']['cod']['field'] = 'cod';
+$handler->display->display_options['filters']['cod']['operator'] = 'contains';
+$handler->display->display_options['filters']['cod']['group'] = 1;
+$handler->display->display_options['filters']['cod']['exposed'] = TRUE;
+$handler->display->display_options['filters']['cod']['expose']['operator_id'] = 'cod_op';
+$handler->display->display_options['filters']['cod']['expose']['label'] = 'Cod';
+$handler->display->display_options['filters']['cod']['expose']['operator'] = 'cod_op';
+$handler->display->display_options['filters']['cod']['expose']['identifier'] = 'cod';
+$handler->display->display_options['filters']['cod']['expose']['remember_roles'] = array(
+  2 => '2',
+  1 => 0,
+  3 => 0,
+);
+$handler->display->display_options['filters']['cod']['group_info']['label'] = 'Cod';
+$handler->display->display_options['filters']['cod']['group_info']['identifier'] = 'cod';
+$handler->display->display_options['filters']['cod']['group_info']['remember'] = FALSE;
+$handler->display->display_options['filters']['cod']['group_info']['group_items'] = array(
+  1 => array(),
+  2 => array(),
+  3 => array(),
+);
+/* Filter criterion: Price: Category */
+$handler->display->display_options['filters']['category']['id'] = 'category';
+$handler->display->display_options['filters']['category']['table'] = 'pricelist_price';
+$handler->display->display_options['filters']['category']['field'] = 'category';
+$handler->display->display_options['filters']['category']['operator'] = 'contains';
+$handler->display->display_options['filters']['category']['group'] = 1;
+$handler->display->display_options['filters']['category']['exposed'] = TRUE;
+$handler->display->display_options['filters']['category']['expose']['operator_id'] = 'category_op';
+$handler->display->display_options['filters']['category']['expose']['label'] = 'Category';
+$handler->display->display_options['filters']['category']['expose']['operator'] = 'category_op';
+$handler->display->display_options['filters']['category']['expose']['identifier'] = 'category';
+$handler->display->display_options['filters']['category']['expose']['remember_roles'] = array(
+  2 => '2',
+  1 => 0,
+  3 => 0,
+);
+/* Filter criterion: Price: Good */
+$handler->display->display_options['filters']['goods']['id'] = 'goods';
+$handler->display->display_options['filters']['goods']['table'] = 'pricelist_price';
+$handler->display->display_options['filters']['goods']['field'] = 'goods';
+$handler->display->display_options['filters']['goods']['operator'] = 'contains';
+$handler->display->display_options['filters']['goods']['group'] = 1;
+$handler->display->display_options['filters']['goods']['exposed'] = TRUE;
+$handler->display->display_options['filters']['goods']['expose']['operator_id'] = 'goods_op';
+$handler->display->display_options['filters']['goods']['expose']['label'] = 'Good';
+$handler->display->display_options['filters']['goods']['expose']['operator'] = 'goods_op';
+$handler->display->display_options['filters']['goods']['expose']['identifier'] = 'goods';
+$handler->display->display_options['filters']['goods']['expose']['remember_roles'] = array(
+  2 => '2',
+  1 => 0,
+  3 => 0,
+);
+
+/* Display: Pricelist edit */
+$handler = $view->new_display('page', 'Pricelist edit', 'page');
+$handler->display->display_options['path'] = 'priceedit';
+$handler->display->display_options['menu']['type'] = 'normal';
+$handler->display->display_options['menu']['title'] = 'Price edit';
+$handler->display->display_options['menu']['weight'] = '0';
+$handler->display->display_options['menu']['context'] = 0;
+$handler->display->display_options['menu']['context_only_inline'] = 0;
