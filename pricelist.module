@@ -1,38 +1,26 @@
 <?php
 function pricelist_menu() {
-  $items['pricelist'] = array(
-         'title' => 'Pricelist',
-         'description' => 'Pricelist.',
-         'page callback' => 'pricelist_view_page',
-		 'access arguments' => array('view pricelist'),
-      );
-  $items['pricelist/edit'] = array(
-         'title' => 'Edit Pricelist',
-         'description' => 'Edit pricelist.',
-         'page callback' => 'pricelist_edit_page',
-		 'access arguments' => array('edit pricelist'),
-      );
-  $items['pricelist/edit/%/delete'] = array(
+  $items['priceedit/%/delete'] = array(
          'title callback' => 'pricelist_delete_page_title',
-         'title arguments' => array(2),
+         'title arguments' => array(1),
          'page callback' => 'drupal_get_form',
-         'page arguments' => array('pricelist_delete_form', 2),
+         'page arguments' => array('pricelist_delete_form', 1),
 		 'access arguments' => array('edit pricelist'),
       );
-  $items['pricelist/edit/%/edit'] = array(
+  $items['priceedit/%/edit'] = array(
          'title callback' => 'pricelist_update_page_title',
-         'title arguments' => array(2),
+         'title arguments' => array(1),
          'page callback' => 'drupal_get_form',
-         'page arguments' => array('pricelist_update_form', 2),
+         'page arguments' => array('pricelist_update_form', 1),
 		 'access arguments' => array('edit pricelist'),
       );
-  $items['pricelist/edit/insert'] = array(
+  $items['priceedit/insert'] = array(
          'title' => 'Append record.',
          'page callback' => 'drupal_get_form',
          'page arguments' => array('pricelist_insert_form', 2),
 		 'access arguments' => array('edit pricelist'),
       );
-  $items['admin/config/user-interface/xray'] = array(
+  $items['admin/config/user-interface/pricelist'] = array(
          'title' => 'Pricelist',
          'description' => 'Configure pricelist.',
          'page callback' => 'drupal_get_form',
@@ -62,62 +50,7 @@ return array(
   );
 }
 
-function pricelist_view_page() {
-  $build = array();
-  $header = array(
-    array('data' =>t('ID'), 'field' => 'p.id'),
-    array('data' =>t('Cod'), 'field' => 'p.cod'),
-    array('data' => t('Category'),'field' => 'p.category'),
-    array('data' => t('Good'), 'field' => 'p.goods'),
-    array('data' => t('Price'), 'field' => 'p.price'),
-  );
-  $rows = array();
-  $query = db_select('pricelist_price','p')->extend('TableSort');
-  $query->fields('p', array('id','cod', 'category','goods', 'price'));
-  $result = $query->extend('PagerDefault')->limit(variable_get('pricelist_row_on_page_view', 50))->orderByHeader($header)->execute();
-  foreach ($result as $good) {
-    $rows[] = array(
-	  array('data'=>$good->id,'id'=>'id'),
-	  array('data'=>$good->cod,'id'=>'cod'),
-	  array('data'=>$good->category,'id'=>'category'),
-	  array('data'=>$good->goods,'id'=>'goods'),
-	  array('data'=>str_replace(' ', '&nbsp;',number_format($good->price, 2, ',', ' ')),'id'=>'price'),
-      );
-  }
-  $output = theme('table', array('header' => $header, 'rows' => $rows));
-  $output .= theme('pager');
-  return $output;
-}  
 
-
-function pricelist_edit_page() {
-  $build = array();
-  $header = array(
-    array('data' =>t('ID'), 'field' => 'p.id'),
-    array('data' =>t('Cod'), 'field' => 'p.cod'),
-    array('data' => t('Category'),'field' => 'p.category'),
-    array('data' => t('Good'), 'field' => 'p.goods'),
-    array('data' => t('Price'), 'field' => 'p.price'),
-    array('data' => t('Action'), ),
-  );
-  $rows = array();
-  $query = db_select('pricelist_price','p')->extend('TableSort');
-  $query->fields('p', array('id','cod', 'category','goods', 'price'));
-  $result = $query->extend('PagerDefault')->limit(variable_get('pricelist_row_on_page_edit', 100))->orderByHeader($header)->execute();
-  foreach ($result as $good) {
-    $rows[] = array(
-	  array('data'=>$good->id,'id'=>'id'),
-	  array('data'=>$good->cod,'id'=>'cod'),
-	  array('data'=>$good->category,'id'=>'category'),
-	  array('data'=>$good->goods,'id'=>'goods'),
-	  array('data'=>str_replace(' ', '&nbsp;',number_format($good->price, 2, ',', ' ')),'id'=>'price'),
-	  array('data'=>l(t('Edit'), "pricelist/edit/{$good->id}/edit").'  '.l(t('Delete'), "pricelist/edit/{$good->id}/delete"),'id'=>'actions'),
-      );
-  }
-  $output = theme('table', array('header' => $header, 'rows' => $rows));
-  $output .= theme('pager');
-  return $output;
-}  
 
 
 function pricelist_delete_page_title($id) {
@@ -147,7 +80,7 @@ function pricelist_delete_form($form, $form_state) {
     '#value' => t('Submit'),
   );
   $form['cancel'] = array(
-    '#markup' => l(t('Cancel'), 'pricelist/edit'),
+    '#markup' => l(t('Cancel'), 'priceedit'),
   );
   return $form;
 }
@@ -165,7 +98,7 @@ function pricelist_delete_form_submit($form, &$form_state) {
   else {
     drupal_set_message(t('Record @id is undefined.', $placeholders), 'warning');
   }
-  $form_state['redirect'] = 'pricelist/edit';
+  $form_state['redirect'] = 'priceedit';
 }
 
 function pricelist_insert_form($form, $form_state) {
@@ -203,7 +136,7 @@ function pricelist_insert_form($form, $form_state) {
     '#value' => t('Submit'),
   );
   $form['actions']['cancel'] = array(
-    '#markup' => l(t('Cancel'), 'pricelist/edit')
+    '#markup' => l(t('Cancel'), 'priceedit')
   );
   $form['#validate'][] = 'pricelist_insert_form_validate';
   return $form;
@@ -265,7 +198,7 @@ function pricelist_update_form($form, $form_state) {
     '#value' => t('Submit'),
   );
   $form['actions']['cancel'] = array(
-    '#markup' => l(t('Cancel'), 'pricelist/edit')
+    '#markup' => l(t('Cancel'), 'priceedit')
   );
   $form['#validate'][] = 'pricelist_insert_form_validate';
   return $form;
@@ -312,6 +245,7 @@ function pricelist_insert_form_submit($form, &$form_state) {
   else {
     drupal_set_message(t("Data hasn't been sent."), 'error');
   }
+  $form_state['redirect'] = 'priceedit';
 }
 
 function pricelist_update_form_submit($form, &$form_state) {
@@ -332,5 +266,13 @@ function pricelist_update_form_submit($form, &$form_state) {
   else {
     drupal_set_message(t('Data is not updated'), 'warning');
   }
-  $form_state['redirect'] = 'pricelist/edit';
+  $form_state['redirect'] = 'priceedit';
+}
+
+
+function pricelist_views_api() {
+   return array(
+     'api' => 3,
+     'path' => drupal_get_path('module', 'pricelist'), 
+   );
 }

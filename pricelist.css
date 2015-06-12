@@ -1,13 +1,11 @@
-#price {
+td.views-field-price {
   text-align: right;
-}
-#cid {
-  text-align: right;
-}
-#category {
-  min-width: 70px;
-}
-#price {
   min-width: 50px;
+}
+td.views-field-cod {
+  text-align: right;
+}
+td.category {
+  min-width: 70px;
 }
 
